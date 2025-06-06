@@ -1,0 +1,487 @@
+対話型AI相棒システム API仕様書（改訂 第三版）
+
+
+
+1. はじめに
+
+このドキュメントは、対話型AI相棒システムの各コンポーネント（AIデバイス、社員向けユーザーアプリ、企業人事部向け管理アプリ、クラウドサーバー）間のAPIインターフェースを定義するものです。前版に対し、性能、責務分担、エラー処理、データ構造、マルチテナンシーに関する考慮を反映しました。
+
+
+
+2. 基本事項
+
+認証・認可:
+
+全てのAPIアクセスには、適切な認証・認可メカニズムが必要です。
+ユーザーアプリ: 利用する社員に紐づく認証が必要です。
+デバイス: デバイス自身としての認証が必要です。
+管理アプリ: 人事部担当者の認証が必要です。
+認可: 認証されたユーザー/デバイスが、要求された操作やリソースへのアクセス権限を持つかを確認します。特に管理アプリからのアクセス、およびユーザーアプリからの許可済み履歴送信（対象社員/デバイスの妥当性）において重要です。
+具体的な実装は別途定義します。
+データ形式: リクエスト/レスポンスのボディはJSON形式を基本とします。
+
+日付・時刻形式: ISO 8601形式 (YYYY-MM-DDTHH:mm:ssZ) を使用します。
+
+エラー処理: エラーレスポンスは 4xx または 5xx 系のHTTPステータスコードを使用し、ボディに以下のJSON形式を含めます。
+
+JSON
+
+{
+  "code": "unique_error_code", // 例: "AUTH_001", "VALIDATION_002", "NOT_FOUND_001"
+  "message": "Human-readable error description.", // 例: "指定された社員は存在しません。"
+  "details": null // オプション：エラーに関する追加情報（例：どのフィールドが無効か）
+}
+
+
+一般的なエラーコード定義:
+
+AUTH_UNAUTHORIZED (401): 認証情報が無効、または認証が必須なリソースに未認証でアクセスした。「お前は誰だ？」の状態。
+AUTH_FORBIDDEN (403): 認証は成功したが、そのユーザー/デバイスには要求された操作やリソースへのアクセス権限がない。「お前が誰かは分かったが、アクセスは許されない」の状態。
+VALIDATION_ERROR (400): リクエストの形式が不正、必須パラメータ不足、パラメータの値が不正など、クライアント側の入力に問題がある。
+RESOURCE_NOT_FOUND (404): 要求された特定の社員やデバイスなどのリソースがシステムに存在しない。（例：/employees/{employee_id} で存在しないIDを指定した場合）
+INTERNAL_ERROR (500): サーバー内部での予期せぬエラー。データベース接続エラーなど、クライアント側では対処できないサーバーの問題。
+
+
+マルチテナンシー:
+
+クラウドサーバーは複数企業に対応可能な設計とします。
+管理アプリからのアクセス（/company/*エンドポイント）は、認証されたユーザーが所属する企業のデータのみに自動的にフィルタリングされます。APIリクエストに企業IDを含める必要はありません。（最初にsign upするときに所属する企業を選択するなどして対応）
+デバイスや許可済み履歴のデータも、クラウド側で関連する企業に紐づけて管理されます。
+
+
+
+3. デバイス内ローカルサーバー API仕様
+AIデバイス内で稼働し、主に社員向けユーザーアプリからのアクセスを受け付けます。会話履歴は許可なく外部に送信されないよう、ここで取得できるのはローカルデータのみです。
+
+
+3.1. 会話履歴取得
+エンドポイント: /history
+メソッド: GET
+概要: デバイスにローカル保存されている会話履歴を取得します。サーバー送信が許可されたかどうかにかかわらず全て取得できます。会話は会話セッション単位でグループ化されます。取得する会話セッションの数や期間で制限できます。
+リクエスト:
+クエリパラメータ:
+limit: 取得する会話セッションの最大数
+offset: 取得を開始する位置 (オプション, ページング用)
+start_time: フィルタリング開始日時 (オプション, ISO 8601)
+end_time: フィルタリング終了日時 (オプション, ISO 8601)
+リクエストボディ: なし
+
+レスポンス (成功: 200 OK):
+JSON
+
+[
+  {
+    "conversation_id": "conv_xyz789", // 会話セッションのユニークID
+    "start_time": "2025-04-24T15:00:00Z",
+    "end_time": "2025-04-24T15:05:00Z",
+    "participants": ["user", "ai"],
+    "logs": [ // この会話セッションに含まれる発話ログのリスト
+      {
+        "id": "hist_abc123", // 発話ログのユニークID
+        "sender": "user", // or "ai"
+        "message": "今日の天気はどう？",
+        "timestamp": "2025-04-24T15:00:00Z"
+      },
+      {
+        "id": "hist_def456",
+        "sender": "ai",
+        "message": "晴れていて、お出かけ日和ですよ！",
+        "timestamp": "2025-04-24T15:00:05Z"
+      }
+    ]
+  }
+  // ... 他の会話セッション
+]
+
+検索条件に合致する会話履歴が存在しない場合: 200 OK を返し、空のリスト [] を含みます。
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+400 Bad Request (VALIDATION_ERROR): クエリパラメータが不正
+500 Internal Error (INTERNAL_ERROR): デバイス内部エラー
+
+
+3.2. TODOリスト取得
+このエンドポイントは提案に基づき削除しました。
+
+
+3.3. デバイス状態取得
+エンドポイント: /status
+メソッド: GET
+概要: デバイスの現在の稼働状態や接続状態などを取得します。
+リクエスト: なし
+レスポンス (成功: 200 OK):
+
+JSON
+
+{
+  "device_id": "device-001",
+  "device_status": "online", // 例: online, offline, sleeping, error
+  "network_connected": true,
+  "ai_ready": true, // AIモデルが応答可能か
+  "message": "デバイスは正常に動作中です。"
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+500 Internal Error (INTERNAL_ERROR): デバイス内部エラー
+
+
+3.4. 会話履歴送信許可通知
+このエンドポイントは提案に基づき削除しました。
+
+
+
+4. クラウドサーバー API仕様
+インターネット上に配置され、AIデバイス、社員向けユーザーアプリ、企業人事部向け管理アプリからのアクセスを受け付けます。デバイス、社員、企業の紐づけ情報を保持・利用します。
+
+
+4.1. 許可済み会話履歴受け付け (ユーザーアプリ向け)
+エンドポイント: /company/approved-histories (エンドポイント名を /company/* 以下に統一)
+メソッド: POST
+概要: ユーザーアプリから、ユーザーがサーバー送信を許可した会話履歴データを受け取り、送信元の社員/デバイスに紐づけて保存します。AIによる要約を含めることが可能です。
+認証/認可:
+呼び出し元（ユーザーアプリ）は、そのアプリを利用する社員として認証されている必要があります。
+送信されるデータ (employee_id, device_id) が、認証された社員とDB上の紐づきが正しいか、およびその社員が所属する企業のものであるか検証する必要があります。
+リクエスト:
+リクエストボディ:
+
+JSON
+
+{
+  "employee_id": "emp-XYZ", // 送信する社員のID (認証情報から取得/検証)
+  "device_id": "device-001", // 送信するデバイスのID (認証情報やDB紐づけで検証)
+  "conversations": [ // 許可された会話セッションのリスト
+    {
+      "conversation_id": "conv_xyz789", // 会話セッションのユニークID
+      "summary": "今日の天気についてAIと話した。", // AIによる要約 (顧客要求)
+      "start_time": "2025-04-24T15:00:00Z",
+      "end_time": "2025-04-24T15:05:00Z",
+      "logs": [ // この許可済み会話セッションに含まれる発話ログのリスト
+        {
+          "local_id": "hist_abc123", // デバイスローカルでの元のID (追跡用)
+          "sender": "user", // or "ai"
+          "message": "今日の天気はどう？",
+          "timestamp": "2025-04-24T15:00:00Z"
+        }
+        // ... 許可された発話ログのリスト
+      ]
+    }
+  ]
+}
+
+レスポンス (成功: 201 Created):
+JSON
+
+{
+  "status": "success",
+  "message": "許可済み会話履歴を保存しました。",
+  "received_conversation_count": 1,
+  "received_log_count": 2 // 受け付けた発話ログの総数
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 認証されたユーザーが、指定されたemployee_id/device_idの履歴を送信する権限がない (DB上の紐づけに失敗した場合など)
+400 Bad Request (VALIDATION_ERROR): リクエストボディの形式が不正、必須フィールド不足など
+500 Internal Error (INTERNAL_ERROR): サーバー内部エラー、DBエラーなど
+
+
+4.2. 許可済み会話履歴検索・取得 (管理アプリ向け)
+エンドポイント: /company/histories
+メソッド: GET
+概要: 企業人事部向け管理アプリが、ユーザーによってサーバー送信が許可され、クラウドに保存されている会話履歴を、社員、期間、企業などで絞り込んで検索・取得します。会話は会話セッション単位で取得されます。
+認証/認可:
+呼び出し元（管理アプリユーザー）は認証されている必要があります。
+呼び出し元には、要求されたデータ（例: 特定の社員の履歴）を閲覧する権限がある必要があります (所属企業の人事部ロールなど)。データはユーザーが所属する企業に自動フィルタリングされます（マルチテナンシー）。
+リクエスト:
+クエリパラメータ:
+employee_id: 検索対象の社員ID (オプション)
+start_time: 検索期間の開始日時 (オプション, ISO 8601)
+end_time: 検索期間の終了日時 (オプション, ISO 8601)
+limit: 取得する会話セッションまたは発話ログの最大数 (オプション, デフォルト値は10会話セッションとする[要検討])
+offset: 取得開始位置 (オプション, ページング用)
+include_logs: 各会話セッションに含まれる個別の発話ログを含めるか (boolean, オプション, デフォルト検討) - 要約リストだけ見たい場合のために検討
+
+レスポンス (成功: 200 OK):
+検索条件に一致するデータが存在する場合: 会話セッションのリストを返します。
+
+JSON
+
+[
+   {
+    "cloud_conversation_id": "cloud-conv-abc-123", // クラウド側で採番した会話ID
+    "employee_id": "emp-XYZ",
+    "device_id": "device-001", // 元のデバイスID
+    "summary": "今日の天気についてAIと話した。", // AIによる要約
+    "start_time": "2025-04-24T15:00:00Z",
+    "end_time": "2025-04-24T15:05:00Z",
+    "logs": [ // include_logs=true の場合にのみ含まれる
+      {
+        "cloud_log_id": "cloud-log-def-456", // クラウド側で採番したログID
+        "sender": "ai",
+        "message": "晴れていて、お出かけ日和ですよ！",
+        "timestamp": "2025-04-24T15:00:05Z"
+      }
+      // ... 発話ログリスト
+    ]
+   }
+   // ... 検索条件に一致する他の会話セッション
+]
+
+検索条件に合致するデータが存在しない場合: 200 OK を返し、空のリスト [] を含みます。
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 認証されたユーザーに、要求されたデータ（例: 指定社員の履歴）を閲覧する権限がない
+400 Bad Request (VALIDATION_ERROR): クエリパラメータが不正
+404 Not Found (RESOURCE_NOT_FOUND): 検索対象として指定された特定のリソース（例: employee_idなど）がシステムに存在しない。
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー、DBエラーなど
+
+
+4.3. 社員リスト取得 (管理アプリ向け)
+エンドポイント: /company/employees
+メソッド: GET
+概要: システムに登録されている、認証されたユーザーが所属する企業の社員リストを取得します。デバイスとの紐づけ情報を含みます。
+認証/認可:
+呼び出し元（管理アプリユーザー）は認証されている必要があります。
+呼び出し元には、この情報を閲覧する権限がある必要があります (所属企業の人事部ロールなど)。データはユーザーが所属する企業に自動フィルタリングされます（マルチテナンシー）。
+リクエスト: なし 
+レスポンス (成功: 200 OK):
+
+JSON
+
+[
+  {
+    "employee_id": "emp-XYZ",
+    "name": "山田 太郎",
+    "assigned_device_id": "device-001", // この社員に割り当てられたデバイスID (未割当ならnull)
+  }
+  // ... 社員リスト
+]
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 認証されたユーザーに、この情報を閲覧する権限がない
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー、DBエラーなど
+
+
+4.4. デバイスリスト取得 (管理アプリ向け)
+エンドポイント: /company/devices
+メソッド: GET
+概要: 認証されたユーザーが所属する企業に割り当てられたデバイスのリストと、クラウドサーバーが把握しているその状態を取得します。社員との紐づけ情報を含みます。
+認証/認可: 4.3と同様。
+リクエスト: なし （※検索・フィルタリングのパラメータを追加検討）
+レスポンス (成功: 200 OK):
+
+JSON
+
+[
+  {
+    "device_id": "device-001",
+    "status": "online", // クラウドから見た状態（例：オンライン、オフライン、エラー）
+    "last_seen_timestamp": "2025-04-24T22:35:00Z", // 最後にクラウドと通信した時間
+    "assigned_employee_id": "emp-XYZ", // 現在割り当てられている社員ID (未割当ならnull)
+    "current_assignment_id": "assign_abc123" // 現在の割り当てID (未割当ならnull) - 4.6以下と連携
+  }
+  // ... デバイスリスト
+]
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 認証されたユーザーに、この情報を閲覧する権限がない
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー、DBエラーなど
+
+
+4.5. デバイス状態報告 (デバイス向け)
+エンドポイント: /company/devices/{device_id}/status (エンドポイント名を /company/devices/{device_id}/status に変更)
+メソッド: POST
+概要: AIデバイスが自身の現在の状態をクラウドサーバーに報告します。これは主にシステム監視とトラブルシューティングを目的としています。人事部が直接リアルタイムに監視するわけではありませんが、問題発生時の原因究明に不可欠な情報を提供します。定期的な実行、または状態変化時の実行を想定します。
+認証/認可: 呼び出し元（デバイス）はデバイス認証されている必要があります。認証情報から所属企業とデバイスが正当か検証します。
+リクエスト:
+リクエストボディ:
+
+JSON
+
+{
+  "device_id": "device-001", // 自身のデバイスID (認証情報でも確認)
+  "device_status": "online", // 例: online, sleeping, error
+  "network_connected": true,
+  "ai_ready": true,
+  "timestamp": "2025-04-24T22:40:00Z", // 状態報告のタイムスタンプ
+  "error_details": null // エラー状態の場合に詳細情報
+}
+
+レスポンス (成功: 200 OK):
+
+JSON
+
+{
+  "status": "success",
+  "message": "デバイス状態を更新しました。"
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): デバイス認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 認証は成功したが、報告されたdevice_idが認証情報と一致しないなど
+400 Bad Request (VALIDATION_ERROR): リクエストボディの形式が不正
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラーなど
+
+
+4.6. デバイス割り当て登録/付け替え (管理アプリ向け)
+エンドポイント: /company/device-assignments (新規登録/付け替えをこのエンドポイントに統合)
+メソッド: POST
+概要: 特定のデバイスを特定の社員に割り当てます。対象デバイスが既に他の社員に割り当てられている場合は、既存の割り当てを終了し、新しい割り当てを作成します（付け替えシナリオ）。これにより、常にデバイスと社員の現在の有効な割り当ては1対1になります。新しい割り当てが作成され、新しい assignment_id が発行されます。
+認証/認可:
+呼び出し元（管理アプリユーザー）は認証されている必要があります。
+呼び出し元にはデバイス割り当てを管理する権限（人事部ロールなど）が必要です。
+リクエストボディ中の device_id と employee_id が、認証されたユーザーが所属する企業の有効なデバイスおよび社員であるか検証が必要です。
+リクエスト:
+
+リクエストボディ:
+JSON
+
+{
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ"
+}
+
+レスポンス (成功: 201 Created): 新しく作成された割り当て情報を返します。
+JSON
+
+{
+  "assignment_id": "assign_new_xyz456", // 新しい割り当て情報のユニークID
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ",
+  "assigned_at": "2025-05-04T10:30:00Z", // 割り当てが行われたタイムスタンプ
+  "unassigned_at": null // 新規作成なのでnull
+}
+
+既存の割り当てを付け替えた場合: 成功レスポンスは同じですが、システム内部では古い割り当ての unassigned_at が更新されます（レスポンスボディには含まない設計とする）。
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 割り当て管理権限がない
+400 Bad Request (VALIDATION_ERROR): リクエストボディ不正、必須フィールド不足
+404 Not Found (RESOURCE_NOT_FOUND): 指定されたdevice_idまたはemployee_idが存在しない
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー
+
+
+4.7. デバイス割り当て参照 (管理アプリ向け)
+概要: 特定のデバイス割り当て情報を参照します。参照方法として、割り当てID、デバイスID、社員IDそれぞれに対応するエンドポイントを提供します。
+認証/認可:
+呼び出し元（管理アプリユーザー）は認証されている必要があります。
+呼び出し元には参照権限が必要です。要求された割り当て情報が、認証されたユーザーが所属する企業のものであるか検証。
+
+
+4.7.1. 割り当てIDで参照
+エンドポイント: /company/device-assignments/{assignment_id}
+メソッド: GET
+概要: 指定された assignment_id の割り当て情報を取得します。
+リクエスト:
+パスパラメータ: {assignment_id}
+クエリパラメータ: なし
+リクエストボディ: なし
+
+レスポンス (成功: 200 OK): 割り当て情報を返します。
+JSON
+
+{
+  "assignment_id": "assign_abc123",
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ",
+  "assigned_at": "2025-05-04T10:30:00Z",
+  "unassigned_at": null // 割り当て解除された日時 (解除済みの場合)
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 参照権限がない、または対象データが所属企業のものではない
+404 Not Found (RESOURCE_NOT_FOUND): 指定された割り当てIDが存在しない
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー
+
+
+4.7.2. デバイスIDで現在の割り当てを参照
+エンドポイント: /company/devices/{device_id}/assignment
+メソッド: GET
+概要: 指定された device_id に現在割り当てられている有効な割り当て情報を取得します。
+リクエスト:
+パスパラメータ: {device_id}
+クエリパラメータ: なし
+リクエストボディ: なし
+
+レスポンス (成功: 200 OK): 現在の割り当て情報を返します。
+JSON
+
+{
+  "assignment_id": "assign_abc123", // 現在の割り当てID
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ",
+  "assigned_at": "2025-05-04T10:30:00Z",
+  "unassigned_at": null // 現在有効なのでnull
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 参照権限がない、または対象データが所属企業のものではない
+404 Not Found (RESOURCE_NOT_FOUND): 指定されたdevice_idのデバイスが存在しない、または現在どの社員にも割り当てられていない。
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー
+
+
+4.7.3. 社員IDで現在の割り当てを参照
+エンドポイント: /company/employees/{employee_id}/assignment
+メソッド: GET
+概要: 指定された employee_id に現在割り当てられている有効な割り当て情報を取得します。
+リクエスト:
+パスパラメータ: {employee_id}
+クエリパラメータ: なし
+リクエストボディ: なし
+
+レスポンス (成功: 200 OK): 現在の割り当て情報を返します。
+JSON
+
+{
+  "assignment_id": "assign_abc123", // 現在の割り当てID
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ",
+  "assigned_at": "2025-05-04T10:30:00Z",
+  "unassigned_at": null // 現在有効なのでnull
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 参照権限がない、または対象データが所属企業のものではない
+404 Not Found (RESOURCE_NOT_FOUND): 指定されたemployee_idの社員が存在しない、または現在どのデバイスも割り当てられていない。
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー
+
+
+4.8. (削除) デバイス割り当て変更/更新 (旧4.8は削除)
+要求により、既存の割り当てを「更新」するのではなく、「新しい割り当てを作成し、古い割り当てを終了する」方式に変更したため、このエンドポイントは削除しました。 新しい割り当て作成は 4.6 POST /company/device-assignments で行います。
+
+
+4.9. デバイス割り当て解除 (管理アプリ向け)
+エンドポイント: /company/devices/{device_id}/assignment (割り当て解除のエンドポイントをひとつにまとめた)
+メソッド: DELETE
+概要: 指定された device_id の現在の割り当てを解除します。システム上は、該当する割り当て情報の unassigned_at フィールドに解除日時を設定する論理削除とします。
+認証/認可: 4.6と同様。要求されたデバイスが、認証されたユーザーが所属する企業のものであるか検証。
+リクエスト:
+パスパラメータ: {device_id}
+クエリパラメータ: なし
+リクエストボディ: なし
+
+レスポンス (成功: 200 OK): 解除された割り当て情報を返します。
+JSON
+
+{
+  "assignment_id": "assign_abc123", // 解除された割り当てID
+  "device_id": "device-001",
+  "employee_id": "emp-XYZ",
+  "assigned_at": "2025-05-04T10:30:00Z",
+  "unassigned_at": "2025-05-04T11:00:00Z" // 解除された日時
+}
+
+エラーレスポンス:
+401 Unauthorized (AUTH_UNAUTHORIZED): 認証情報が無効
+403 Forbidden (AUTH_FORBIDDEN): 解除権限がない
+404 Not Found (RESOURCE_NOT_FOUND): 指定されたdevice_idのデバイスが存在しない、または現在どの社員にも割り当てられていない。
+500 Internal Error (INTERNAL_ERROR, DB_ERROR): サーバー内部エラー
