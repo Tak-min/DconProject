@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイエモ App Mockup</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="app-container">
+        <div class="screen active" id="login-screen">
+            <header class="screen-header login-header">
+                <h1>ログイン</h1>
+            </header>
+            <main class="screen-content login-content">
+                <h2>ようこそ！</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-employee-id">社員ID</label>
+                        <input type="text" id="login-employee-id" name="employee_id" placeholder="社員ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">パスワード</label>
+                        <div class="password-wrapper">
+                             <input type="password" id="login-password" name="password" placeholder="パスワード" required>
+                            <i class="fas fa-eye password-toggle"></i>
+                        </div>
+                    </div>
+                    <p id="login-error-message" class="error-message"></p>
+                    <button type="submit" class="btn btn-primary btn-login">ログイン</button>
+                    <a href="#" id="show-register-btn" class="signup-link">新規登録</a>
+                </form>
+            </main>
+        </div>
+
+        <div class="screen" id="register-screen">
+            <header class="screen-header login-header">
+                <h1>新規登録</h1>
+            </header>
+            <main class="screen-content login-content">
+                <h2>新しいアカウントを作成</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-employee-id">社員ID</label>
+                        <input type="text" id="register-employee-id" name="employee_id" placeholder="希望の社員ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">パスワード</label>
+                        <input type="password" id="register-password" name="password" placeholder="パスワード" required>
+                    </div>
+                    <p id="register-error-message" class="error-message"></p>
+                    <button type="submit" class="btn btn-primary btn-login">登録する</button>
+                    <a href="#" id="show-login-btn" class="signup-link">ログイン画面に戻る</a>
+                </form>
+            </main>
+        </div>
+
+        <div class="screen" id="recommendation-screen">
+            </div>
+
+        </div>
+    <script src="/script.js"></script>
+</body>
+</html>
