@@ -17,3 +17,13 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # ORMモデル（models.pyで定義）が継承するためのベースクラス
 Base = declarative_base()
+
+def get_db():
+    """
+    データベースセッションを提供する依存性注入用の関数
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
