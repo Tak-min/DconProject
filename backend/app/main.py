@@ -46,13 +46,14 @@ def get_recommendation(current_user: models.User = Depends(security.get_current_
 def get_local_history(current_user: models.User = Depends(security.get_current_user)):
     """
     デバイスのローカル会話履歴（ダミー）を返す
-    API仕様書 3.1 に基づく
+    API仕様書 3.1 に基づき、データ構造を修正
     """
     return [
         {
             "conversation_id": "conv_xyz789",
             "start_time": "2025-06-06T15:00:00Z",
-            "preview": "ユーザー: 今日の天気はどう？ AI: 晴れていて、お出かけ日和ですよ！",
+            "end_time": "2025-06-06T15:00:10Z", # API仕様に合わせて end_time を追加
+            "participants": ["user", "ai"],      # API仕様に合わせて participants を追加
             "logs": [
                 {"id": "log_001", "sender": "user", "message": "今日の天気はどう？", "timestamp": "2025-06-06T15:00:00Z"},
                 {"id": "log_002", "sender": "ai", "message": "晴れていて、お出かけ日和ですよ！", "timestamp": "2025-06-06T15:00:05Z"}
@@ -61,13 +62,15 @@ def get_local_history(current_user: models.User = Depends(security.get_current_u
         {
             "conversation_id": "conv_abc456",
             "start_time": "2025-06-05T12:30:00Z",
-            "preview": "ユーザー: おすすめのランチは？ AI: 駅前のカフェが人気です。",
+            "end_time": "2025-06-05T12:30:15Z", # API仕様に合わせて end_time を追加
+            "participants": ["user", "ai"],      # API仕様に合わせて participants を追加
             "logs": [
                 {"id": "log_003", "sender": "user", "message": "おすすめのランチは？", "timestamp": "2025-06-05T12:30:00Z"},
                 {"id": "log_004", "sender": "ai", "message": "駅前のカフェが人気です。特にパスタが美味しいと評判ですよ。", "timestamp": "2025-06-05T12:30:10Z"}
             ]
         }
     ]
+
 
 # ステップ4で追加
 @app.get("/status")
@@ -82,6 +85,57 @@ def get_device_status(current_user: models.User = Depends(security.get_current_u
         "network_connected": True,
         "ai_ready": True
     }
+
+@app.post("/company/approved-histories", status_code=status.HTTP_201_CREATED)
+def receive_approved_histories(
+    history_data: schemas.ApprovedHistoryCreate, 
+    current_user: models.User = Depends(security.get_current_user)
+):
+    """
+    ユーザーが許可した会話履歴をサーバーで受け付ける
+    API仕様書 4.1 に基づく 
+    """
+    # ここでは、受け取ったデータを確認するためにコンソールに出力するだけとします
+    # 本来はデータベースに保存する処理を記述します
+    print(f"受け取った会話履歴データ by {current_user.employee_id}:")
+    print(history_data.model_dump_json(indent=2))
+
+    return {
+        "status": "success",
+        "message": "許可済み会話履歴を保存しました。",
+        "received_conversation_count": len(history_data.conversations)
+    }
+
+
+#------------------------------------------------送信済み会話履歴に関する処理----------------------------------------
+@app.get("/company/histories")
+def get_sent_histories(current_user: models.User = Depends(security.get_current_user)):
+    """
+    ユーザーが送信した会話履歴（ダミー）を返す
+    API仕様書 4.2 に基づく 
+    """
+    # 本来はデータベースから current_user.employee_id に紐づく履歴を検索する
+    # ここではダミーデータを返す
+    return [
+        {
+            "cloud_conversation_id": "cloud-conv-abc-123", # 
+            "employee_id": current_user.employee_id, # 
+            "device_id": "device-001", # 
+            "summary": "今日の天気についてAIと話した。", # 
+            "start_time": "2025-06-08T10:30:00Z", # 
+            "end_time": "2025-06-08T10:35:00Z", # 
+            "logs": [] # 
+        },
+        {
+            "cloud_conversation_id": "cloud-conv-def-456",
+            "employee_id": current_user.employee_id,
+            "device_id": "device-001",
+            "summary": "週末の予定について相談した。",
+            "start_time": "2025-06-07T18:00:00Z",
+            "end_time": "2025-06-07T18:10:00Z",
+            "logs": []
+        }
+    ]
 
 # フロントエンドのファイルを配信(パスが異なっていたので修正)
 app.mount("/", StaticFiles(directory="../frontend", html=True), name="static")

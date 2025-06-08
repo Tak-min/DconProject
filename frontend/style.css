@@ -60,12 +60,13 @@ body {
 }
 
 /* デフォルトで表示するスクリーン (ログイン画面など) */
-#login-screen {
-/* #recommendation-screen { */ /* おすすめ画面を初期表示にする場合 */
+/* 画面がちらついていたので削除 */
+/* #login-screen {
     opacity: 1;
     visibility: visible;
     z-index: 1;
-}
+} */
+
 .screen.active { /* JavaScriptでこのクラスをトグルして表示切替 */
     opacity: 1;
     visibility: visible;
@@ -191,6 +192,96 @@ body {
 .signup-link:hover {
     text-decoration: underline;
 }
+
+
+/* --- サイドメニューのスタイル --- */
+.side-menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    /* ↓↓↓ 初期状態は非表示 ↓↓↓ */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.side-menu-overlay.active {
+    /* ↓↓↓ activeクラスが付くと表示される ↓↓↓ */
+    opacity: 1;
+    visibility: visible;
+}
+
+.side-menu-content {
+    position: absolute;
+    top: 0;
+    right: 0; /* 右からスライドイン */
+    width: 75%;
+    max-width: 300px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -3px 0 15px rgba(0,0,0,0.1);
+    /* ↓↓↓ 初期状態は画面の外（右側） ↓↓↓ */
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.side-menu-overlay.active .side-menu-content {
+    /* ↓↓↓ activeクラスが付くとスライドインしてくる ↓↓↓ */
+    transform: translateX(0);
+}
+
+/* メニューヘッダーと閉じるボタンのスタイル */
+.side-menu-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 15px;
+    min-height: 60px; /* アプリヘッダーと高さを合わせる */
+    align-items: center;
+    background-color: var(--primary-color);
+}
+
+.close-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.6em;
+    cursor: pointer;
+}
+
+/* メニューリストのスタイル */
+.menu-list {
+    list-style: none;
+    padding: 25px 20px;
+    margin: 0;
+}
+
+.menu-list li {
+    margin-bottom: 22px;
+}
+
+.menu-list li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.05em;
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.menu-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+.orange-dot { background-color: var(--primary-color); }
+.blue-dot { background-color: var(--secondary-color); }
+.black-dot { background-color: #333; }
+
 
 /* --- Chat Screen (General) & Conversation Detail Screen --- */
 .app-header {
@@ -589,6 +680,22 @@ body {
     justify-content: center;
 }
 .btn-logout i { margin-left: 8px; }
+
+/* --- 設定画面のボタン用スタイル --- */
+.btn-secondary {
+    width: auto; /* 幅をコンテンツの長さに自動調整 */
+    padding: 10px 20px; /* ボタン内の余白（上下10px、左右20px） */
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    color: #333;
+    font-weight: normal; /* 文字の太さを標準に */
+    display: inline-block; /* 他のbtnクラスとの競合を避け、幅をautoにするため */
+}
+
+.btn-secondary:hover {
+    background-color: #e5e5e5; /* マウスを乗せたときの色 */
+    border-color: #ccc;
+}
 
 
 /* --- Side Menu --- */
