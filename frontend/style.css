@@ -104,12 +104,12 @@ body {
     flex-shrink: 0;
 }
 
-/* --- Login Screen --- */
+/* --- Login & Register Screen --- */
 .login-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 40px;
+    padding-top: 20px; /* 少し上に詰める */
 }
 .login-content h2 {
     font-size: 1.8em;
@@ -148,30 +148,27 @@ body {
     transition: border-color 0.2s;
 }
 
-/* ユーザーが入力欄にフォーカスした際に枠線の色を変更 */
 .password-wrapper:focus-within {
     border-color: var(--primary-color);
 }
 
-/* コンテナ内の入力欄のスタイル */
 .password-wrapper input {
     width: 100%;
-    padding: 12px 0 12px 15px; /* 右側のパディングを削除 */
-    border: none; /* 枠線は親要素が持つため不要に */
-    outline: none; /* フォーカス時の青い枠線を消去 */
+    padding: 12px 0 12px 15px;
+    border: none;
+    outline: none;
     font-size: 1em;
-    flex-grow: 1; /* 横幅を自動で最大化 */
+    flex-grow: 1;
     background-color: transparent;
-    font-family: inherit; /* 親要素のフォントを確実に継承 */
-    line-height: 1.5;     /* 行の高さを固定値に（変動を防ぐ） */
-    box-sizing: border-box; /* ボックスモデルを統一 */
+    font-family: inherit;
+    line-height: 1.5;
+    box-sizing: border-box;
 }
 
-/* アイコン（トグルボタン）のスタイル */
 .password-toggle {
-    display: inline-flex; /* SVGを中央揃えにするため */
+    display: inline-flex;
     align-items: center;
-    padding: 0 15px; /* アイコンの左右に余白を確保 */
+    padding: 0 15px;
     color: #aaa;
     cursor: pointer;
 }
@@ -195,7 +192,7 @@ body {
     color: var(--background-white);
 }
 .btn-primary:hover {
-    background-color: #e6734a; /* 少し暗いオレンジ */
+    background-color: #e6734a;
 }
 .btn-login {
     margin-top: 25px;
@@ -212,6 +209,25 @@ body {
     text-decoration: underline;
 }
 
+/* ▼▼▼ 修正点: アイコン関連のスタイルを追加 ▼▼▼ */
+.avatar-preview-container {
+    margin-top: 10px;
+    text-align: center;
+}
+.avatar-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+.avatar-input {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+/* ▲▲▲ 修正ここまで ▲▲▲ */
 
 /* --- サイドメニューのスタイル (スマホ用) --- */
 .side-menu-overlay {
@@ -296,8 +312,6 @@ body {
 .green-dot { background-color: var(--tertiary-color); }
 .black-dot { background-color: #333; }
 
-
-/* --- Chat Screen (General) & Conversation Detail Screen --- */
 .app-header {
     justify-content: space-between;
 }
@@ -308,13 +322,13 @@ body {
     font-size: 1.4em;
     color: var(--background-white);
     cursor: pointer;
-    padding: 5px; /* クリック範囲確保 */
+    padding: 5px;
 }
 .error-message {
-    color: #f44336; /* 赤色 */
+    color: #f44336;
     font-size: 0.9em;
     text-align: center;
-    min-height: 1.2em; /* メッセージがない時も高さを確保 */
+    min-height: 1.2em;
     margin-top: -10px;
     margin-bottom: 15px;
 }
@@ -357,7 +371,7 @@ body {
     line-height: 1.5;
     margin-bottom: 12px;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* 3行で省略 */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -379,36 +393,35 @@ body {
     color: var(--text-color-light);
     margin-bottom: 15px;
 }
-.recommendation-footer { /* おすすめ画面フッターのスタイル */
-    border-top: none; /* フッターの線は不要な場合 */
-    background-color: transparent; /* 背景を透明に */
-    padding-bottom: 20px; /* 下部に余白 */
+.recommendation-footer {
+    border-top: none;
+    background-color: transparent;
+    padding-bottom: 20px;
 }
 .recommendation-footer .action-buttons {
-    /* ▼▼▼ 修正点1: display: flex を追加 ▼▼▼ */
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    padding: 0 15px; /* ボタン群の左右パディング */
+    padding: 0 15px;
 }
 .recommendation-footer .btn-action {
     width: 100%;
     padding: 12px;
     font-size: 1em;
     border-radius: 8px;
-    display: flex; /* アイコンとテキストを中央揃え */
+    display: flex;
     align-items: center;
     justify-content: center;
 }
 .recommendation-footer .btn-action i {
     margin-right: 8px;
 }
-.btn-detail-view { /* 「詳細確認」ボタン */
+.btn-detail-view {
     background-color: var(--secondary-color);
     color: var(--text-color-dark);
 }
-.btn-skip { /* 「スキップ」ボタン */
+.btn-skip {
     background-color: var(--background-grey);
     color: var(--text-color-light);
 }
@@ -417,8 +430,7 @@ body {
     color: var(--background-white);
 }
 
-
-/* --- History List Screens (Local & Sent) --- */
+/* --- History List Screens --- */
 .history-content { padding-top: 15px; }
 .search-bar-container {
     display: flex;
@@ -465,7 +477,6 @@ body {
     color: var(--text-color-extralight);
 }
 .history-item-id { font-weight: 500; }
-.history-item-employee { color: var(--primary-color); }
 .history-item-preview, .history-item-summary {
     font-size: 0.95em;
     color: var(--text-color-light);
@@ -482,70 +493,11 @@ body {
     text-align: right;
 }
 
-
-/* --- Conversation Log Detail Screen --- */
-.chat-content { /* 会話ログ表示エリアのスタイル */
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.chat-bubble-entry {
-    display: flex;
-    flex-direction: column;
-}
-.chat-bubble-meta {
-    font-size: 0.75em;
-    color: var(--text-color-extralight);
-    margin-bottom: 4px;
-}
-.chat-bubble-meta .sender { text-transform: capitalize; }
-
-.chat-bubble { /* 実際のチャットバブル */
-    padding: 10px 14px;
-    border-radius: 18px;
-    max-width: 75%;
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-.chat-bubble.user {
-    background-color: var(--primary-color);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 5px; /* しっぽ風 */
-}
-.chat-bubble.ai {
-    background-color: var(--background-grey);
-    color: var(--text-color-dark);
-    align-self: flex-start;
-    border-bottom-left-radius: 5px; /* しっぽ風 */
-}
-/* ユーザーのメッセージの場合、メタ情報を右寄せ */
-.chat-bubble-entry:has(.chat-bubble.user) .chat-bubble-meta {
-    align-self: flex-end;
-    padding-right: 5px;
-}
-/* AIのメッセージの場合、メタ情報を左寄せ */
-.chat-bubble-entry:has(.chat-bubble.ai) .chat-bubble-meta {
-    align-self: flex-start;
-    padding-left: 5px;
-}
-
-.chat-input-footer { /* 会話ログ詳細画面のフッター（入力欄など） */
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid var(--border-color);
-    background-color: var(--background-white); /* フッター背景 */
-}
-/* 省略 */
-
-
 /* --- User Settings Screen --- */
 .settings-content { padding: 0; background-color: var(--background-light-grey); }
 .settings-section {
     background-color: var(--background-white);
-    margin-bottom: 10px; /* セクション間の余白 */
+    margin-bottom: 10px;
     padding: 15px;
 }
 .settings-section:last-child { margin-bottom: 0; }
@@ -555,12 +507,17 @@ body {
     align-items: center;
     padding-top: 20px; padding-bottom: 20px;
 }
-.account-avatar {
-    font-size: 3.5em;
-    color: var(--primary-color);
+/* ▼▼▼ 修正点: アイコン関連のスタイルを追加・変更 ▼▼▼ */
+.account-avatar-wrapper {
+    position: relative;
+    cursor: pointer;
     margin-right: 20px;
-    line-height: 1; /* アイコンの高さ調整 */
 }
+.account-avatar .avatar-preview {
+    width: 64px;
+    height: 64px;
+}
+/* ▲▲▲ 修正ここまで ▲▲▲ */
 .account-details .detail-item {
     display: flex;
     font-size: 0.95em;
@@ -568,7 +525,7 @@ body {
 }
 .account-details .detail-item .label {
     color: var(--text-color-light);
-    width: 80px; /* ラベル幅を固定して値を揃える */
+    width: 80px;
 }
 .account-details .detail-item .value { color: var(--text-color-dark); font-weight: 500; }
 
@@ -578,14 +535,14 @@ body {
     align-items: center;
     font-size: 1em;
 }
-.toggle-switch { /* トグルスイッチのコンテナ */
+.toggle-switch {
     position: relative;
     display: inline-block;
     width: 50px;
     height: 28px;
 }
-.toggle-switch input { display: none; } /* チェックボックス本体は隠す */
-.slider { /* スイッチの背景部分 */
+.toggle-switch input { display: none; }
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -595,7 +552,7 @@ body {
     background-color: #ccc;
     transition: .4s;
 }
-.slider:before { /* スイッチのつまみ部分 */
+.slider:before {
     position: absolute;
     content: "";
     height: 20px;
@@ -605,10 +562,10 @@ body {
     background-color: white;
     transition: .4s;
 }
-.toggle-switch input:checked + .slider { background-color: var(--primary-color); } /* オン時の背景色 */
-.toggle-switch input:checked + .slider:before { transform: translateX(22px); } /* オン時のつまみ移動 */
-.slider.round { border-radius: 28px; } /* 角丸（背景） */
-.slider.round:before { border-radius: 50%; } /* 角丸（つまみ） */
+.toggle-switch input:checked + .slider { background-color: var(--primary-color); }
+.toggle-switch input:checked + .slider:before { transform: translateX(22px); }
+.slider.round { border-radius: 28px; }
+.slider.round:before { border-radius: 50%; }
 
 .device-status-section h3 {
     font-size: 0.9em;
@@ -624,10 +581,15 @@ body {
     display: flex;
     align-items: center;
 }
-.device-icon { /* ロボットアイコン */
+.device-icon {
     font-size: 2.5em;
     color: var(--primary-color);
     margin-right: 15px;
+}
+/* ▼▼▼ 修正点: テキスト重なり解消のためのスタイル ▼▼▼ */
+.status-info {
+    display: flex;
+    flex-direction: column;
 }
 .status-text {
     font-size: 1.1em;
@@ -636,7 +598,8 @@ body {
     display: flex;
     align-items: center;
 }
-.status-indicator { /* オンライン状態を示す丸印 */
+/* ▲▲▲ 修正ここまで ▲▲▲ */
+.status-indicator {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -644,14 +607,14 @@ body {
     display: inline-block;
 }
 .status-indicator.online { background-color: var(--tertiary-color); }
-.status-indicator.offline { background-color: #f44336; } /* 例：オフライン時は赤 */
-.status-detail { /* 「AI準備OK」などの補足情報 */
+.status-indicator.offline { background-color: #f44336; }
+.status-detail {
     font-size: 0.85em;
     color: var(--text-color-light);
-    margin-top: 4px; /* status-textの下に表示する場合 */
+    margin-top: 2px; /* 縦並びになったのでマージンを調整 */
 }
 
-.setting-item-link { /* 「お知らせ」などのリンク形式の項目 */
+.setting-item-link {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -660,16 +623,16 @@ body {
     font-size: 1em;
     padding: 5px 0;
 }
-.setting-item-link i { color: var(--text-color-extralight); } /* 外部リンクアイコンの色 */
+.setting-item-link i { color: var(--text-color-extralight); }
 
-.logout-section { background-color: transparent; padding-top: 20px; } /* ログアウトボタンのセクション */
+.logout-section { background-color: transparent; padding-top: 20px; }
 .btn-logout {
     width: 100%;
     padding: 12px;
     font-size: 1em;
-    color: #f44336; /* ログアウトボタンの文字色（赤系） */
+    color: #f44336;
     background-color: var(--background-white);
-    border: 1px solid #f44336; /* 枠線も赤系 */
+    border: 1px solid #f44336;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -698,16 +661,14 @@ body {
 /* =================================== */
 
 @media (min-width: 768px) {
-    /* ▼▼▼ 修正点2: スクロールバー問題の解決 ▼▼▼ */
     body {
         display: block;
-        overflow: hidden; /* bodyレベルでのスクロールを禁止 */
+        overflow: hidden;
     }
 
-    /* ▼▼▼ 修正点3: サイドバーを右側に配置 ▼▼▼ */
     #app-container {
         display: flex;
-        flex-direction: row; /* row-reverse から row に変更 */
+        flex-direction: row;
         max-width: 1400px;
         height: 95vh;
         margin: 2.5vh auto;
@@ -723,11 +684,10 @@ body {
         background: #f8f9fa;
         flex-shrink: 0;
         box-shadow: inset -1px 0 2px rgba(0,0,0,0.05);
-        /* スマホ用のoverlayスタイルを上書き */
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
-        background-color: transparent; /* 背景を透明に */
+        background-color: transparent;
     }
 
     .side-menu-content {
@@ -739,7 +699,6 @@ body {
         padding-top: 20px;
     }
     
-    /* スマホ用のハンバーガーメニューと閉じるボタンを非表示に */
     .app-header .menu-icon,
     .side-menu-header {
         display: none;
@@ -761,23 +720,21 @@ body {
         flex-direction: column;
     }
 
-    /* PC表示ではサイドバーが常にあるため、戻るボタンは不要 */
     #content-area .app-header .back-icon {
         display: none;
     }
 
-    /* ▼▼▼ 修正点4: ボタンのサイズ調整 ▼▼▼ */
     .recommendation-footer .action-buttons {
-        flex-direction: row; /* ボタンを横並びに変更 */
-        justify-content: center; /* 中央揃えにする */
-        gap: 20px; /* ボタン間の隙間を広げる */
-        max-width: 700px; /* ボタン群が広がりすぎないように最大幅を指定 */
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+        max-width: 700px;
         margin: 0 auto;
     }
 
     .recommendation-footer .btn-action {
-        width: auto; /* width: 100% を上書き */
-        flex: 1; /* ボタンの幅を均等に分配 */
+        width: auto;
+        flex: 1;
         padding: 12px 25px;
     }
 }

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マイエモ App Mockup</title>
+    <title>Mind Emo!</title>
+
+    <link rel="icon" href="favicon.ico">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -28,7 +31,7 @@
                             <span class="password-toggle">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </span>
-                            </div>
+                        </div>
                     </div>
                     <p id="login-error-message" class="error-message"></p>
                     <button type="submit" class="btn btn-primary btn-login">ログイン</button>
@@ -51,6 +54,13 @@
                     <div class="form-group">
                         <label for="register-password">パスワード</label>
                         <input type="password" id="register-password" name="password" placeholder="パスワード" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-avatar">アイコン画像 (任意)</label>
+                        <div class="avatar-preview-container">
+                            <img id="register-avatar-preview" src="./default-avatar.png" alt="アイコンプレビュー" class="avatar-preview">
+                        </div>
+                        <input type="file" id="register-avatar" name="avatar" accept="image/*" class="avatar-input">
                     </div>
                     <p id="register-error-message" class="error-message"></p>
                     <button type="submit" class="btn btn-primary btn-login">登録する</button>
@@ -151,7 +161,12 @@
                 </header>
                 <main class="screen-content settings-content">
                     <div class="settings-section account-info">
-                        <div class="account-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="account-avatar-wrapper">
+                            <div id="settings-avatar-container" class="account-avatar">
+                                <img id="settings-avatar" src="./default-avatar.png" alt="ユーザーアイコン" class="avatar-preview">
+                            </div>
+                            <input type="file" id="avatar-upload-input" style="display: none;" accept="image/*">
+                        </div>
                         <div class="account-details">
                             <div class="detail-item">
                                 <span class="label">ID</span>
@@ -161,7 +176,6 @@
                     </div>
                 
                     <div class="settings-section security-settings">
-                        <!-- <h3>セキュリティ</h3> -->
                         <button class="btn btn-secondary" id="change-password-btn">
                             パスワードを変更する
                         </button>
@@ -179,10 +193,12 @@
                         <h3>デバイス状況</h3>
                         <div class="device-status-card">
                             <i class="fas fa-robot device-icon"></i>
-                            <div class="status-text"><span class="status-indicator"></span> </div>
-                            <div class="status-detail"></div>
+                            <div class="status-info">
+                                <div class="status-text"><span class="status-indicator"></span> </div>
+                                <div class="status-detail"></div>
+                            </div>
                         </div>
-                    </div>
+                        </div>
                     <div class="settings-section announcement-section">
                          <a href="#" class="setting-item-link">
                             <span>お知らせ</span><i class="fas fa-external-link-alt"></i>
@@ -213,6 +229,6 @@
         </div>
 
     </div>
-    <script src="/script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
