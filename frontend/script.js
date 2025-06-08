@@ -29,9 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeMenuBtn: document.querySelector('.close-menu-btn'),
         navLinks: document.querySelectorAll('[data-target-screen]'),
         settingsEmployeeId: document.getElementById('settings-employee-id'),
-        // --- ▼ 追加 ▼ ---
         changePasswordBtn: document.getElementById('change-password-btn'),
-        // --- ▲ 追加 ▲ ---
     };
 
 
@@ -78,6 +76,19 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function handleNavigation(screenId) {
         console.log(`[Debug] handleNavigation: 「${screenId}」への遷移を開始します。`);
+
+        const sideMenu = document.getElementById('sideMenu');
+        const contentArea = document.getElementById('content-area');
+        if (screenId === 'login-screen' || screenId === 'register-screen') {
+            // ログイン画面表示時は、サイドバーとコンテンツエリアを非表示にする
+            if (sideMenu) sideMenu.style.display = 'none';
+            if (contentArea) contentArea.style.display = 'none';
+        } else {
+            // それ以外の画面では、サイドバーとコンテンツエリアを表示する
+            if (sideMenu) sideMenu.style.display = ''; // CSSのデフォルトに戻す
+            if (contentArea) contentArea.style.display = '';
+        }
+
         showScreen(screenId);
         
         // 画面ごとに必要なデータを読み込む
@@ -178,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.localHistoryList.appendChild(listItem);
             });
             console.log('[Debug] 描画が完了しました。');
-            elements.localHistoryList.style.backgroundColor = 'lightblue';
 
         } catch (error) {
             console.error('[Error] loadLocalHistory 関数内でエラーが発生しました:', error);
@@ -265,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!response.ok) throw new Error(data.detail || 'ログインに失敗しました。');
                     localStorage.setItem('accessToken', data.access_token);
                     localStorage.setItem('employeeId', formData.get('employee_id'));
-                    alert('ログインしました！');
                     handleNavigation('recommendation-screen');
                 } catch (error) {
                     elements.loginErrorMessage.textContent = error.message;
@@ -346,22 +355,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // --- ▼▼▼ ここから変更 ▼▼▼ ---
-        // パスワード表示切り替えの汎用ロジック
+        // 表示／非表示アイコンのSVGデータを定義
+        const eyeIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+        const eyeOffIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+        // パスワード表示切り替えのロジック
         document.querySelectorAll('.password-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
-                const icon = e.currentTarget;
-                const passwordInput = icon.previousElementSibling;
+                const iconContainer = e.currentTarget;
+                const passwordWrapper = iconContainer.closest('.password-wrapper');
+                if (!passwordWrapper) return;
+                
+                const passwordInput = passwordWrapper.querySelector('input');
+                if (!passwordInput) return;
 
-                if (passwordInput && passwordInput.tagName === 'INPUT') {
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                    }
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    iconContainer.innerHTML = eyeOffIconSVG; // 「非表示」アイコンに切り替え
+                } else {
+                    passwordInput.type = 'password';
+                    iconContainer.innerHTML = eyeIconSVG; // 「表示」アイコンに切り替え
                 }
             });
         });

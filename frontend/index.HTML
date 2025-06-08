@@ -25,8 +25,10 @@
                         <label for="login-password">パスワード</label>
                         <div class="password-wrapper">
                             <input type="password" id="login-password" name="password" placeholder="パスワード" required>
-                            <i class="fas fa-eye password-toggle"></i>
-                        </div>
+                            <span class="password-toggle">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </span>
+                            </div>
                     </div>
                     <p id="login-error-message" class="error-message"></p>
                     <button type="submit" class="btn btn-primary btn-login">ログイン</button>
@@ -57,140 +59,143 @@
             </main>
         </div>
 
-        <div class="screen" id="recommendation-screen">
-            <header class="screen-header app-header">
-                <div class="header-icon user-icon" data-target-screen="settings-screen">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <h1>おすすめ</h1>
-                <div class="header-icon menu-icon" id="recSideMenuTrigger">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </header>
-            <main class="screen-content recommendation-content">
-                <h3 class="recommendation-title">今日の送信おすすめ</h3>
-                <div class="recommendation-box">
+        <div id="content-area">
+            <div class="screen" id="recommendation-screen">
+                <header class="screen-header app-header">
+                    <div class="header-icon user-icon" data-target-screen="settings-screen">
+                        <i class="fas fa-user-circle"></i>
                     </div>
-                <p class="send-prompt">この会話履歴を送信しますか？</p>
-            </main>
-            <footer class="screen-footer recommendation-footer">
-                <div class="action-buttons">
-                    <button class="btn-action btn-confirm"><i class="fas fa-check"></i> 送信する</button>
-                    <button class="btn-action btn-detail-view"><i class="fas fa-eye"></i> 詳細確認</button>
-                    <button class="btn-action btn-skip"><i class="fas fa-times"></i> スキップ</button>
-                </div>
-            </footer>
-        </div>
-
-        <div class="screen" id="history-list-screen">
-            <header class="screen-header app-header history-header">
-                <div class="header-icon back-icon" data-target-screen="recommendation-screen">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <h1>ローカル会話履歴</h1>
-                <div class="header-icon options-icon">
-                    <i class="fas fa-ellipsis-v"></i>
-                </div>
-            </header>
-            <main class="screen-content history-content">
-                <div class="search-bar-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-bar" placeholder="キーワードで検索">
-                </div>
-                <ul class="history-list local-history-list">
-                    </ul>
-            </main>
-        </div>
+                    <h1>おすすめ</h1>
+                    <div class="header-icon menu-icon" id="recSideMenuTrigger">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                </header>
+                <main class="screen-content recommendation-content">
+                    <h3 class="recommendation-title">今日の送信おすすめ</h3>
+                    <div class="recommendation-box">
+                        </div>
+                    <p class="send-prompt">この会話履歴を送信しますか？</p>
+                </main>
+                <footer class="screen-footer recommendation-footer">
+                    <div class="action-buttons">
+                        <button class="btn-action btn-confirm"><i class="fas fa-check"></i> 送信する</button>
+                        <button class="btn-action btn-detail-view"><i class="fas fa-eye"></i> 詳細確認</button>
+                        <button class="btn-action btn-skip"><i class="fas fa-times"></i> スキップ</button>
+                    </div>
+                </footer>
+            </div>
         
-        <div class="screen" id="conversation-log-screen">
-            <header class="screen-header app-header">
-                <div class="header-icon back-icon" data-target-screen="history-list-screen">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <h1 id="conversationLogTitle">会話ログ詳細</h1>
-                <div class="header-icon options-icon"></div>
-            </header>
-            <main class="screen-content chat-content" id="chatLogArea">
-            </main>
-            <footer class="screen-footer chat-input-footer">
-                <button class="btn btn-primary" id="send-conversation-btn">
-                    <i class="fas fa-paper-plane"></i> この会話をサーバーに送信
-                </button>
-            </footer>
-        </div>
-
-        <div class="screen" id="sent-history-list-screen">
-            <header class="screen-header app-header history-header">
-                <div class="header-icon back-icon" data-target-screen="recommendation-screen">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <h1>送信済み履歴</h1>
-                <div class="header-icon options-icon">
-                    <i class="fas fa-ellipsis-v"></i>
-                </div>
-            </header>
-            <main class="screen-content history-content">
-                <div class="search-bar-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-bar" placeholder="キーワードで検索">
-                </div>
-                <ul class="history-list sent-history-list">
-                    </ul>
-            </main>
-        </div>
+            <div class="screen" id="history-list-screen">
+                <header class="screen-header app-header history-header">
+                    <div class="header-icon back-icon" data-target-screen="recommendation-screen">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>ローカル会話履歴</h1>
+                    <div class="header-icon options-icon">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </header>
+                <main class="screen-content history-content">
+                    <div class="search-bar-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-bar" placeholder="キーワードで検索">
+                    </div>
+                    <ul class="history-list local-history-list">
+                        </ul>
+                </main>
+            </div>
+            
+            <div class="screen" id="conversation-log-screen">
+                <header class="screen-header app-header">
+                    <div class="header-icon back-icon" data-target-screen="history-list-screen">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1 id="conversationLogTitle">会話ログ詳細</h1>
+                    <div class="header-icon options-icon"></div>
+                </header>
+                <main class="screen-content chat-content" id="chatLogArea">
+                </main>
+                <footer class="screen-footer chat-input-footer">
+                    <button class="btn btn-primary" id="send-conversation-btn">
+                        <i class="fas fa-paper-plane"></i> この会話をサーバーに送信
+                    </button>
+                </footer>
+            </div>
         
-        <div class="screen" id="settings-screen">
-            <header class="screen-header app-header">
-                <div class="header-icon back-icon" data-target-screen="recommendation-screen">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <h1>ユーザー設定</h1>
-            </header>
-            <main class="screen-content settings-content">
-                <div class="settings-section account-info">
-                    <div class="account-avatar"><i class="fas fa-user-circle"></i></div>
-                    <div class="account-details">
-                        <div class="detail-item">
-                            <span class="label">ID</span>
-                            <span class="value" id="settings-employee-id"></span>
+            <div class="screen" id="sent-history-list-screen">
+                <header class="screen-header app-header history-header">
+                    <div class="header-icon back-icon" data-target-screen="recommendation-screen">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>送信済み履歴</h1>
+                    <div class="header-icon options-icon">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </header>
+                <main class="screen-content history-content">
+                    <div class="search-bar-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-bar" placeholder="キーワードで検索">
+                    </div>
+                    <ul class="history-list sent-history-list">
+                        </ul>
+                </main>
+            </div>
+            
+            <div class="screen" id="settings-screen">
+                <header class="screen-header app-header">
+                    <div class="header-icon back-icon" data-target-screen="recommendation-screen">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <h1>ユーザー設定</h1>
+                </header>
+                <main class="screen-content settings-content">
+                    <div class="settings-section account-info">
+                        <div class="account-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="account-details">
+                            <div class="detail-item">
+                                <span class="label">ID</span>
+                                <span class="value" id="settings-employee-id"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="settings-section security-settings">
-                    <!-- <h3>セキュリティ</h3> -->
-                    <button class="btn btn-secondary" id="change-password-btn">
-                        パスワードを変更する
-                    </button>
-                </div>
-                <div class="settings-section notification-settings">
-                    <div class="setting-item">
-                        <span>通知</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="slider round"></span>
-                        </label>
+                
+                    <div class="settings-section security-settings">
+                        <!-- <h3>セキュリティ</h3> -->
+                        <button class="btn btn-secondary" id="change-password-btn">
+                            パスワードを変更する
+                        </button>
                     </div>
-                </div>
-                <div class="settings-section device-status-section">
-                    <h3>デバイス状況</h3>
-                    <div class="device-status-card">
-                        <i class="fas fa-robot device-icon"></i>
-                        <div class="status-text"><span class="status-indicator"></span> </div>
-                        <div class="status-detail"></div>
+                    <div class="settings-section notification-settings">
+                        <div class="setting-item">
+                            <span>通知</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="settings-section announcement-section">
-                     <a href="#" class="setting-item-link">
-                        <span>お知らせ</span><i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-                <div class="settings-section logout-section">
-                    <button class="btn btn-logout" id="logout-btn">
-                        ログアウト <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </main>
+                    <div class="settings-section device-status-section">
+                        <h3>デバイス状況</h3>
+                        <div class="device-status-card">
+                            <i class="fas fa-robot device-icon"></i>
+                            <div class="status-text"><span class="status-indicator"></span> </div>
+                            <div class="status-detail"></div>
+                        </div>
+                    </div>
+                    <div class="settings-section announcement-section">
+                         <a href="#" class="setting-item-link">
+                            <span>お知らせ</span><i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                    <div class="settings-section logout-section">
+                        <button class="btn btn-logout" id="logout-btn">
+                            ログアウト <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </main>
+            </div>
+            
         </div>
         
         <div class="side-menu-overlay" id="sideMenu">

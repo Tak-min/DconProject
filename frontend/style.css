@@ -59,14 +59,6 @@ body {
     background-color: var(--background-white); /* スクリーンのデフォルト背景 */
 }
 
-/* デフォルトで表示するスクリーン (ログイン画面など) */
-/* 画面がちらついていたので削除 */
-/* #login-screen {
-    opacity: 1;
-    visibility: visible;
-    z-index: 1;
-} */
-
 .screen.active { /* JavaScriptでこのクラスをトグルして表示切替 */
     opacity: 1;
     visibility: visible;
@@ -124,7 +116,7 @@ body {
     margin-bottom: 30px;
     color: var(--text-color-dark);
 }
-.login-form {
+#login-form, #register-form {
     width: 100%;
     max-width: 320px;
 }
@@ -138,6 +130,7 @@ body {
     color: var(--text-color-light);
 }
 .form-group input[type="text"],
+
 .form-group input[type="password"] {
     width: 100%;
     padding: 12px 15px;
@@ -145,19 +138,45 @@ body {
     border-radius: 8px;
     font-size: 1em;
 }
+
+/* パスワード入力欄とアイコンのコンテナ */
 .password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+    display: flex; /* Flexboxレイアウトに変更 */
+    align-items: center; /* 要素を垂直方向に中央揃え */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: border-color 0.2s;
 }
-.password-wrapper input[type="password"] {
-    padding-right: 45px; /* アイコンスペース */
+
+/* ユーザーが入力欄にフォーカスした際に枠線の色を変更 */
+.password-wrapper:focus-within {
+    border-color: var(--primary-color);
 }
+
+/* コンテナ内の入力欄のスタイル */
+.password-wrapper input {
+    width: 100%;
+    padding: 12px 0 12px 15px; /* 右側のパディングを削除 */
+    border: none; /* 枠線は親要素が持つため不要に */
+    outline: none; /* フォーカス時の青い枠線を消去 */
+    font-size: 1em;
+    flex-grow: 1; /* 横幅を自動で最大化 */
+    background-color: transparent;
+    font-family: inherit; /* 親要素のフォントを確実に継承 */
+    line-height: 1.5;     /* 行の高さを固定値に（変動を防ぐ） */
+    box-sizing: border-box; /* ボックスモデルを統一 */
+}
+
+/* アイコン（トグルボタン）のスタイル */
 .password-toggle {
-    position: absolute;
-    right: 15px;
+    display: inline-flex; /* SVGを中央揃えにするため */
+    align-items: center;
+    padding: 0 15px; /* アイコンの左右に余白を確保 */
     color: #aaa;
     cursor: pointer;
+}
+.password-toggle:hover {
+    color: var(--primary-color);
 }
 .btn {
     padding: 13px 20px;
@@ -194,7 +213,7 @@ body {
 }
 
 
-/* --- サイドメニューのスタイル --- */
+/* --- サイドメニューのスタイル (スマホ用) --- */
 .side-menu-overlay {
     position: absolute;
     top: 0;
@@ -203,14 +222,12 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 100;
-    /* ↓↓↓ 初期状態は非表示 ↓↓↓ */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
 }
 
 .side-menu-overlay.active {
-    /* ↓↓↓ activeクラスが付くと表示される ↓↓↓ */
     opacity: 1;
     visibility: visible;
 }
@@ -224,22 +241,19 @@ body {
     height: 100%;
     background-color: #fff;
     box-shadow: -3px 0 15px rgba(0,0,0,0.1);
-    /* ↓↓↓ 初期状態は画面の外（右側） ↓↓↓ */
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
 }
 
 .side-menu-overlay.active .side-menu-content {
-    /* ↓↓↓ activeクラスが付くとスライドインしてくる ↓↓↓ */
     transform: translateX(0);
 }
 
-/* メニューヘッダーと閉じるボタンのスタイル */
 .side-menu-header {
     display: flex;
     justify-content: flex-end;
     padding: 10px 15px;
-    min-height: 60px; /* アプリヘッダーと高さを合わせる */
+    min-height: 60px;
     align-items: center;
     background-color: var(--primary-color);
 }
@@ -252,7 +266,6 @@ body {
     cursor: pointer;
 }
 
-/* メニューリストのスタイル */
 .menu-list {
     list-style: none;
     padding: 25px 20px;
@@ -280,6 +293,7 @@ body {
 }
 .orange-dot { background-color: var(--primary-color); }
 .blue-dot { background-color: var(--secondary-color); }
+.green-dot { background-color: var(--tertiary-color); }
 .black-dot { background-color: #333; }
 
 
@@ -310,7 +324,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    padding: 20px;
+    flex: 1;
 }
 .recommendation-title {
     font-size: 1.2em;
@@ -370,6 +385,8 @@ body {
     padding-bottom: 20px; /* 下部に余白 */
 }
 .recommendation-footer .action-buttons {
+    /* ▼▼▼ 修正点1: display: flex を追加 ▼▼▼ */
+    display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
@@ -395,7 +412,6 @@ body {
     background-color: var(--background-grey);
     color: var(--text-color-light);
 }
-/* フッター内の送信ボタン（.btn-confirm）は共通スタイルを使用 */
 .recommendation-footer .btn-confirm {
     background-color: var(--primary-color);
     color: var(--background-white);
@@ -522,27 +538,8 @@ body {
     border-top: 1px solid var(--border-color);
     background-color: var(--background-white); /* フッター背景 */
 }
-.chat-input-bar {
-    flex-grow: 1;
-    padding: 10px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    margin-right: 10px;
-    font-size: 0.95em;
-}
-.send-message-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
+/* 省略 */
+
 
 /* --- User Settings Screen --- */
 .settings-content { padding: 0; background-color: var(--background-light-grey); }
@@ -681,248 +678,106 @@ body {
 }
 .btn-logout i { margin-left: 8px; }
 
-/* --- 設定画面のボタン用スタイル --- */
 .btn-secondary {
-    width: auto; /* 幅をコンテンツの長さに自動調整 */
-    padding: 10px 20px; /* ボタン内の余白（上下10px、左右20px） */
+    width: auto;
+    padding: 10px 20px;
     background-color: #f0f0f0;
     border: 1px solid #ddd;
     color: #333;
-    font-weight: normal; /* 文字の太さを標準に */
-    display: inline-block; /* 他のbtnクラスとの競合を避け、幅をautoにするため */
+    font-weight: normal;
+    display: inline-block;
 }
 
 .btn-secondary:hover {
-    background-color: #e5e5e5; /* マウスを乗せたときの色 */
+    background-color: #e5e5e5;
     border-color: #ccc;
 }
 
+/* =================================== */
+/* --- レスポンシブデザイン (PC用) --- */
+/* =================================== */
 
-/* --- Side Menu --- */
-.side-menu-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 100;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-.side-menu-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-.side-menu-content {
-    position: absolute;
-    top: 0;
-    right: 0; /* 右からスライドイン */
-    width: 75%;
-    max-width: 300px;
-    height: 100%;
-    background-color: var(--background-white);
-    box-shadow: -3px 0 15px rgba(0,0,0,0.1);
-    transform: translateX(100%); /* 初期状態は画面外 */
-    transition: transform 0.3s ease-in-out;
-}
-.side-menu-overlay.active .side-menu-content {
-    transform: translateX(0); /* アクティブ時に表示 */
-}
-.side-menu-header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px 15px;
-    min-height: var(--header-height);
-    align-items: center;
-    background-color: var(--primary-color);
-}
-.close-menu-btn {
-    background: none;
-    border: none;
-    color: var(--background-white);
-    font-size: 1.6em;
-    cursor: pointer;
-}
-.menu-list {
-    list-style: none;
-    padding: 25px 20px;
-    margin: 0;
-}
-.menu-list li {
-    margin-bottom: 22px;
-}
-.menu-list li a {
-    text-decoration: none;
-    color: var(--text-color-dark);
-    font-size: 1.05em;
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-}
-.menu-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 12px;
-    display: inline-block;
-}
-.orange-dot { background-color: var(--primary-color); }
-.blue-dot { background-color: var(--secondary-color); }
-.green-dot { background-color: var(--tertiary-color); }
-.black-dot { background-color: var(--text-color-dark); }
+@media (min-width: 768px) {
+    /* ▼▼▼ 修正点2: スクロールバー問題の解決 ▼▼▼ */
+    body {
+        display: block;
+        overflow: hidden; /* bodyレベルでのスクロールを禁止 */
+    }
 
-/* --- Modals (General & Confirmation Modal) --- */
-.confirmation-modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明の背景 */
-    z-index: 110; /* サイドメニューより手前 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s, visibility 0.2s;
-}
-.confirmation-modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-.confirmation-modal-content {
-    background-color: var(--background-white);
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    position: relative;
-    width: 85%;
-    max-width: 320px;
-    text-align: center;
-}
-.close-modal-btn.generic-close-modal-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: none;
-    border: none;
-    font-size: 1.4em;
-    color: #aaa;
-    cursor: pointer;
-}
-.confirmation-modal-content p { /* モーダル内のテキスト */
-    font-size: 1.1em;
-    margin-bottom: 25px;
-    color: var(--text-color-dark);
-}
-.modal-actions { /* モーダル内のボタン配置用 */
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    gap: 10px;
-}
-.modal-actions .btn {
-    flex-grow: 1; /* ボタン幅を均等に */
-}
-.btn-secondary { /* モーダル内のキャンセルボタンなど */
-    background-color: var(--background-grey);
-    color: var(--text-color-light);
-    border: 1px solid var(--border-color);
-}
+    /* ▼▼▼ 修正点3: サイドバーを右側に配置 ▼▼▼ */
+    #app-container {
+        display: flex;
+        flex-direction: row; /* row-reverse から row に変更 */
+        max-width: 1400px;
+        height: 95vh;
+        margin: 2.5vh auto;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-/* User Info Popover (from previous iteration, if needed) */
-.user-info-popover {
-    position: absolute;
-    top: calc(var(--header-height) + 5px);
-    left: 15px;
-    background-color: var(--background-white);
-    border-radius: 8px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-    padding: 15px;
-    z-index: 50;
-    width: 220px;
-    border: 1px solid #eee;
-    display: none;
-}
-.user-info-popover.active { display: block; }
-.popover-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9em;
-    margin-bottom: 12px;
-}
-.popover-item:last-child { margin-bottom: 0; }
-.popover-item span:first-child { color: var(--text-color-light); }
-.popover-item span:last-child { color: var(--text-color-dark); font-weight: 500; }
+    /* --- サイドバーのスタイル --- */
+    .side-menu-overlay {
+        position: static;
+        width: 260px;
+        height: 100%;
+        background: #f8f9fa;
+        flex-shrink: 0;
+        box-shadow: inset -1px 0 2px rgba(0,0,0,0.05);
+        /* スマホ用のoverlayスタイルを上書き */
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        background-color: transparent; /* 背景を透明に */
+    }
 
-/* Context Menu Modal (from previous iteration, if needed) */
-.context-menu-modal {
-    position: absolute;
-    background-color: var(--background-white);
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    padding: 8px 0;
-    z-index: 60;
-    width: 200px;
-    border: 1px solid #eee;
-    display: none;
-}
-.context-menu-modal.active { display: block; }
-.context-menu-modal ul { list-style: none; padding: 0; margin: 0; }
-.context-menu-modal ul li a {
-    display: block;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: var(--text-color-dark);
-    font-size: 0.95em;
-}
-.context-menu-modal ul li a:hover { background-color: var(--background-light-grey); }
+    .side-menu-content {
+        transform: none;
+        position: static;
+        height: 100%;
+        background: #f8f9fa;
+        box-shadow: none;
+        padding-top: 20px;
+    }
+    
+    /* スマホ用のハンバーガーメニューと閉じるボタンを非表示に */
+    .app-header .menu-icon,
+    .side-menu-header {
+        display: none;
+    }
 
-/* Bottom Sheet Modal (from previous iteration, if needed) */
-.bottom-sheet-modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 95;
-    display: flex;
-    align-items: flex-end; /* 下から表示 */
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    /* --- メインコンテンツエリアのスタイル --- */
+    #content-area {
+        flex-grow: 1;
+        height: 100%;
+        position: relative;
+        background-color: #f0f0f0;
+    }
+
+    #content-area .screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* PC表示ではサイドバーが常にあるため、戻るボタンは不要 */
+    #content-area .app-header .back-icon {
+        display: none;
+    }
+
+    /* ▼▼▼ 修正点4: ボタンのサイズ調整 ▼▼▼ */
+    .recommendation-footer .action-buttons {
+        flex-direction: row; /* ボタンを横並びに変更 */
+        justify-content: center; /* 中央揃えにする */
+        gap: 20px; /* ボタン間の隙間を広げる */
+        max-width: 700px; /* ボタン群が広がりすぎないように最大幅を指定 */
+        margin: 0 auto;
+    }
+
+    .recommendation-footer .btn-action {
+        width: auto; /* width: 100% を上書き */
+        flex: 1; /* ボタンの幅を均等に分配 */
+        padding: 12px 25px;
+    }
 }
-.bottom-sheet-modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-.bottom-sheet-modal {
-    background-color: var(--background-white);
-    width: 100%;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    padding: 20px 0 30px 0; /* 下部余白 */
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-    transform: translateY(100%); /* 初期状態は画面外下部 */
-    transition: transform 0.3s ease-in-out;
-}
-.bottom-sheet-modal-overlay.active .bottom-sheet-modal {
-    transform: translateY(0); /* アクティブ時に表示 */
-}
-.bottom-sheet-modal ul { list-style: none; padding: 0; margin: 0; }
-.bottom-sheet-modal ul li a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 25px;
-    text-decoration: none;
-    color: var(--text-color-dark);
-    font-size: 1.05em;
-}
-.bottom-sheet-modal ul li a i { color: #bbb; }
-.bottom-sheet-modal ul li a:hover { background-color: var(--background-light-grey); }
