@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status 
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas, security, database
@@ -8,7 +9,20 @@ from .database import SessionLocal, engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="MindEmo API",
+    description="MindEmo customer web application API",
+    version="1.0.0"
+)
+
+# CORS設定 - Ngrokや外部アクセスに対応
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 本番環境では特定のドメインに制限
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/register/", response_model=schemas.User)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
